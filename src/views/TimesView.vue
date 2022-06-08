@@ -1,3 +1,17 @@
+<script>
+export default {
+  data() {
+    return {
+      times: [
+        { id: 1, nome: "Time 1" },
+        { id: 2, nome: "TIme 2" },
+        { id: 3, nome: "Time 3" },
+      ],
+    };
+  },
+};
+</script>
+
 <template>
   <div class="container">
     <div class="title">
@@ -17,19 +31,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Time</td>
-            <td>???</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Time 2</td>
-            <td>???</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Time 3</td>
+          <tr v-for="time in times" :key="time.id">
+            <td>{{ time.id }}</td>
+            <td>{{ time.nome }}</td>
             <td>???</td>
           </tr>
         </tbody>
