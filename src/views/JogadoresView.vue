@@ -13,12 +13,17 @@ export default {
   },
   methods: {
     salvar() {
-      const novo_id = uuidv4();
-      this.times.push({
-        id: novo_id,
-        nome: this.novo_jogador,
-        time: this.novo_time,
-      });
+      if (this.novo_time !== "") {
+        const novo_id = uuidv4();
+        this.times.push({
+          id: novo_id,
+          nome: this.novo_time,
+        });
+      }
+    },
+    excluir(time) {
+      const indice = this.times.indexOf(time);
+      this.times.splice(indice, 1);
     },
   },
 };
@@ -27,11 +32,10 @@ export default {
 <template>
   <div class="container">
     <div class="title">
-      <h2>Gerenciamento de Jogadores</h2>
+      <h2>Gerenciamento de Times</h2>
     </div>
     <div class="form-input">
-      <input type="text" v-model="novo_time" />
-      <input type="text" v-model="novo_jogador" />
+      <input type="text" v-model="novo_time" @keydown.enter="salvar" />
       <button @click="salvar">Salvar</button>
     </div>
     <div class="list-times">
@@ -47,7 +51,10 @@ export default {
           <tr v-for="time in times" :key="time.id">
             <td>{{ time.id }}</td>
             <td>{{ time.nome }}</td>
-            <td>???</td>
+            <td>
+              <button>Editar</button
+              ><button @click="excluir(time)">Excluir</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -55,3 +62,59 @@ export default {
   </div>
   <RouterView />
 </template>
+
+<style>
+.title {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.form-input {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.form-input input {
+  width: 50%;
+  padding: 0.5rem;
+  border: 5px solid #98b7e1;
+  border-radius: 10px;
+}
+
+.form-input button {
+  padding: 0.5rem;
+  border: 5px solid #98b7e1;
+  border-radius: 10px;
+  color: #454663;
+  font-weight: bold;
+  margin-left: 1%;
+}
+
+.list-times {
+  display: flex;
+  justify-content: center;
+}
+
+table {
+  width: 80%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  border: 1px solid #9bfae2;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+table thead {
+  background-color: #454663;
+  color: #9bfae2;
+}
+
+table thead th {
+  font-weight: bolder;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: #9bfae2;
+}
+</style>
