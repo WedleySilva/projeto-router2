@@ -1,29 +1,28 @@
 <script>
-import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 export default {
   data() {
     return {
-      times: [
-        { id: "4dfadc62-3011-48a9-a384-53cbc062b0b2", nome: "Time 1" },
-        { id: "6fe0c8e2-619b-4c46-b92b-e1ca7a3b970c", nome: "TIme 2" },
-        { id: "9e3a44e1-bceb-4786-a1fd-38c5a76a7745", nome: "Time 3" },
-      ],
-      novo_time: "",
+      jogadores: [],
+      jogador: {},
+      times: [],
     };
   },
+  async created() {
+    await this.buscarTodosOsJogadores();
+    const times = await axios.get("http://localhost:4000/times");
+    this.times = times.data;
+  },
   methods: {
-    salvar() {
-      if (this.novo_time !== "") {
-        const novo_id = uuidv4();
-        this.times.push({
-          id: novo_id,
-          nome: this.novo_time,
-        });
-      }
+    async buscarTodosOsJogadores() {
+      const jogadores = await axios.get(
+        "http://localhost:4000/jogadores?expand=time"
+      );
+      this.jogadores = jogadores.data;
     },
-    excluir(time) {
-      const indice = this.times.indexOf(time);
-      this.times.splice(indice, 1);
+    async salvar() {
+      await axios.post("http://localhost:4000/jogadores", this.jogador);
+      await this.buscarTodosOsJogadores();
     },
   },
 };
@@ -32,10 +31,25 @@ export default {
 <template>
   <div class="container">
     <div class="title">
-      <h2>Gerenciamento de Times</h2>
+      <h2>Gerenciamento de jogadores</h2>
     </div>
     <div class="form-input">
-      <input type="text" v-model="novo_time" @keydown.enter="salvar" />
+      <input type="text" placeholder="Jogador" v-model="jogador.nome" />
+      <input
+        type="text"
+        placeholder="Ano nascimento"
+        v-model="jogador.anoNascimento"
+      />
+      <input
+        type="text"
+        placeholder="Posicao de Jogo"
+        v-model="jogador.posicaoJogo"
+      />
+      <select v-model="jogador.timeId">
+        <option v-for="time in times" :key="time.id" :value="time.id">
+          {{ time.nome }}
+        </option>
+      </select>
       <button @click="salvar">Salvar</button>
     </div>
     <div class="list-times">
@@ -44,23 +58,25 @@ export default {
           <tr>
             <th>ID</th>
             <th>Nome</th>
+            <th>Ano Nascimento</th>
+            <th>Posição de Jogo</th>
+            <th>Time</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="time in times" :key="time.id">
-            <td>{{ time.id }}</td>
-            <td>{{ time.nome }}</td>
-            <td>
-              <button>Editar</button
-              ><button @click="excluir(time)">Excluir</button>
-            </td>
+          <tr v-for="jogador in jogadores" :key="jogador.id">
+            <td>{{ jogador.id }}</td>
+            <td>{{ jogador.nome }}</td>
+            <td>{{ jogador.anoNascimento }}</td>
+            <td>{{ jogador.posicaoJogo }}</td>
+            <td>{{ jogador.time.nome }}</td>
+            <td>???</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-  <RouterView />
 </template>
 
 <style>
